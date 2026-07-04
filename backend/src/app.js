@@ -57,6 +57,7 @@ app.get('/docs.json', async (req, res, next) => {
             }
           }
         } : undefined,
+        security: wf.authRequired ? [{ apiKeyAuth: [] }] : undefined,
         responses: {
           200: {
             description: 'Successful Execution',
