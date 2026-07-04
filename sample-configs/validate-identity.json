@@ -1,0 +1,54 @@
+{
+  "name": "validate-identity",
+  "description": "Example 2: Validate Aadhaar -> Vendor A -> If Success -> Vendor B (GST) -> Merge Responses -> Return",
+  "method": "POST",
+  "path": "/validate-identity",
+  "authRequired": false,
+  "requestSchema": {
+    "type": "object",
+    "required": ["aadhaar", "gstin"],
+    "properties": {
+      "aadhaar": { "type": "string" },
+      "gstin": { "type": "string" }
+    },
+    "additionalProperties": false
+  },
+  "steps": [
+    {
+      "id": "aadhaar",
+      "name": "Validate Aadhaar",
+      "type": "callApi",
+      "api": {
+        "url": "http://localhost:4000/mock/aadhaar/validate",
+        "method": "POST",
+        "bodyMapping": { "aadhaar": "$.input.aadhaar" },
+        "retry": { "attempts": 1, "backoffMs": 200, "retryOnStatus": [502, 503, 504] }
+      }
+    },
+    {
+      "id": "gst",
+      "name": "Fetch GST details from Vendor B (only if Aadhaar is valid)",
+      "type": "callApi",
+      "dependsOn": ["aadhaar"],
+      "runIf": "steps.aadhaar.output.valid = true",
+      "onError": "continue",
+      "api": {
+        "url": "http://localhost:4000/mock/vendor-b/gst-details",
+        "method": "POST",
+        "bodyMapping": { "gstin": "$.input.gstin" }
+      }
+    },
+    {
+      "id": "merge",
+      "name": "Merge Aadhaar + GST results",
+      "type": "transform",
+      "dependsOn": ["aadhaar", "gst"],
+      "transform": {
+        "expression": "{ \"identityValid\": steps.aadhaar.output.valid, \"name\": steps.aadhaar.output.name, \"gst\": steps.gst.output }"
+      }
+    }
+  ],
+  "response": {
+    "mapping": { "result": "$.steps.merge.output" }
+  }
+}

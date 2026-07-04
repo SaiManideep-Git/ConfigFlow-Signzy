@@ -1,0 +1,62 @@
+{
+  "name": "kyc-onboarding",
+  "description": "Example 3: Upload Document -> OCR -> (Fraud Detection + Face Match in parallel) -> Aggregate Result -> Return",
+  "method": "POST",
+  "path": "/kyc-onboarding",
+  "authRequired": true,
+  "requestSchema": {
+    "type": "object",
+    "required": ["documentUrl", "selfieUrl"],
+    "properties": {
+      "documentUrl": { "type": "string" },
+      "selfieUrl": { "type": "string" }
+    },
+    "additionalProperties": false
+  },
+  "steps": [
+    {
+      "id": "ocr",
+      "name": "Extract fields from uploaded document",
+      "type": "callApi",
+      "api": {
+        "url": "http://localhost:4000/mock/ocr/extract",
+        "method": "POST",
+        "bodyMapping": { "documentUrl": "$.input.documentUrl" }
+      }
+    },
+    {
+      "id": "fraudCheck",
+      "name": "Run fraud detection on extracted identity",
+      "type": "callApi",
+      "dependsOn": ["ocr"],
+      "api": {
+        "url": "http://localhost:4000/mock/fraud/check",
+        "method": "POST",
+        "bodyMapping": { "name": "$.steps.ocr.output.extractedFields.name" }
+      }
+    },
+    {
+      "id": "faceMatch",
+      "name": "Match selfie against document photo",
+      "type": "callApi",
+      "dependsOn": ["ocr"],
+      "api": {
+        "url": "http://localhost:4000/mock/face-match/compare",
+        "method": "POST",
+        "bodyMapping": { "selfieUrl": "$.input.selfieUrl", "idPhotoUrl": "$.input.documentUrl" }
+      }
+    },
+    {
+      "id": "aggregate",
+      "name": "Aggregate final KYC verdict",
+      "type": "transform",
+      "dependsOn": ["fraudCheck", "faceMatch"],
+      "transform": {
+        "expression": "{ \"name\": steps.ocr.output.extractedFields.name, \"fraudFlagged\": steps.fraudCheck.output.flagged, \"faceMatch\": steps.faceMatch.output.match, \"decision\": (steps.fraudCheck.output.flagged = false and steps.faceMatch.output.match = true) ? 'APPROVED' : 'REVIEW_REQUIRED' }"
+      }
+    }
+  ],
+  "response": {
+    "mapping": { "kyc": "$.steps.aggregate.output" }
+  }
+}

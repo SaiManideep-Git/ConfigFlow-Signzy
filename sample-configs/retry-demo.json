@@ -1,0 +1,31 @@
+{
+  "name": "retry-demo",
+  "description": "Demonstrates the retry-with-exponential-backoff mechanism against a deliberately flaky mock endpoint (fails twice, then succeeds).",
+  "method": "POST",
+  "path": "/retry-demo",
+  "authRequired": false,
+  "requestSchema": {
+    "type": "object",
+    "required": ["attemptKey"],
+    "properties": {
+      "attemptKey": { "type": "string" }
+    },
+    "additionalProperties": false
+  },
+  "steps": [
+    {
+      "id": "flaky",
+      "name": "Call flaky endpoint",
+      "type": "callApi",
+      "api": {
+        "url": "http://localhost:4000/mock/flaky/echo",
+        "method": "POST",
+        "bodyMapping": { "attemptKey": "$.input.attemptKey", "failTimes": 2 },
+        "retry": { "attempts": 3, "backoffMs": 250, "retryOnStatus": [503] }
+      }
+    }
+  ],
+  "response": {
+    "mapping": { "result": "$.steps.flaky.output" }
+  }
+}

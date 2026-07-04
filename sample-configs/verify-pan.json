@@ -1,0 +1,43 @@
+{
+  "name": "verify-pan",
+  "description": "Example 1: Client -> Verify PAN -> Vendor A -> Transform Response -> Return Result",
+  "method": "POST",
+  "path": "/verify-pan",
+  "authRequired": false,
+  "requestSchema": {
+    "type": "object",
+    "required": ["pan"],
+    "properties": {
+      "pan": { "type": "string", "pattern": "^[A-Z]{5}[0-9]{4}[A-Z]$" }
+    },
+    "additionalProperties": false
+  },
+  "steps": [
+    {
+      "id": "vendorA",
+      "name": "Verify PAN with Vendor A",
+      "type": "callApi",
+      "api": {
+        "url": "http://localhost:4000/mock/vendor-a/verify-pan",
+        "method": "POST",
+        "headers": { "Content-Type": "application/json" },
+        "auth": { "type": "none" },
+        "bodyMapping": { "pan": "$.input.pan" },
+        "timeoutMs": 5000,
+        "retry": { "attempts": 2, "backoffMs": 300, "retryOnStatus": [502, 503, 504] }
+      }
+    },
+    {
+      "id": "formatResult",
+      "name": "Transform vendor response into standardized shape",
+      "type": "transform",
+      "dependsOn": ["vendorA"],
+      "transform": {
+        "expression": "{ \"verified\": steps.vendorA.output.status = 'SUCCESS', \"pan\": input.pan, \"name\": steps.vendorA.output.nameOnPan, \"vendorStatus\": steps.vendorA.output.status }"
+      }
+    }
+  ],
+  "response": {
+    "mapping": { "result": "$.steps.formatResult.output" }
+  }
+}
