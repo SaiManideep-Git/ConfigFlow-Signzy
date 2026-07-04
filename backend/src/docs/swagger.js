@@ -18,7 +18,7 @@ const spec = swaggerJsdoc({
       },
     },
   },
-  apis: ['./src/routes/admin/*.js', './src/routes/agent/*.js'],
+  apis: ['./src/routes/admin/*.js', './src/routes/agent/*.js', './src/mock-vendors/*.js'],
 });
 
 module.exports = spec;

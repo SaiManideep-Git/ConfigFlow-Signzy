@@ -7,7 +7,24 @@ function sleep(ms) {
 }
 
 // --- Vendor A: PAN verification -------------------------------------------------
-// Deterministic mock: PANs ending in the digit '0' are treated as "not found".
+/**
+ * @openapi
+ * /mock/vendor-a/verify-pan:
+ *   post:
+ *     summary: Mock Vendor A - PAN Verification
+ *     tags: [Mock Sandbox APIs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [pan]
+ *             properties:
+ *               pan: { type: string, example: "ABCDE1234F" }
+ *     responses:
+ *       200: { description: OK }
+ */
 router.post('/vendor-a/verify-pan', async (req, res) => {
   await sleep(150);
   const { pan = '' } = req.body;
@@ -21,6 +38,24 @@ router.post('/vendor-a/verify-pan', async (req, res) => {
 });
 
 // --- Vendor B: GST lookup --------------------------------------------------------
+/**
+ * @openapi
+ * /mock/vendor-b/gst-details:
+ *   post:
+ *     summary: Mock Vendor B - GST Lookup
+ *     tags: [Mock Sandbox APIs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [gstin]
+ *             properties:
+ *               gstin: { type: string, example: "29ABCDE1234F1Z5" }
+ *     responses:
+ *       200: { description: OK }
+ */
 router.post('/vendor-b/gst-details', async (req, res) => {
   await sleep(150);
   const { gstin = '' } = req.body;
@@ -35,6 +70,24 @@ router.post('/vendor-b/gst-details', async (req, res) => {
 });
 
 // --- Aadhaar validation ----------------------------------------------------------
+/**
+ * @openapi
+ * /mock/aadhaar/validate:
+ *   post:
+ *     summary: Mock Aadhaar Validation
+ *     tags: [Mock Sandbox APIs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [aadhaar]
+ *             properties:
+ *               aadhaar: { type: string, example: "123456789012" }
+ *     responses:
+ *       200: { description: OK }
+ */
 router.post('/aadhaar/validate', async (req, res) => {
   await sleep(150);
   const { aadhaar = '' } = req.body;
@@ -43,6 +96,24 @@ router.post('/aadhaar/validate', async (req, res) => {
 });
 
 // --- OCR extraction ----------------------------------------------------------------
+/**
+ * @openapi
+ * /mock/ocr/extract:
+ *   post:
+ *     summary: Mock OCR Extraction
+ *     tags: [Mock Sandbox APIs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [documentUrl]
+ *             properties:
+ *               documentUrl: { type: string, example: "https://example.com/doc.png" }
+ *     responses:
+ *       200: { description: OK }
+ */
 router.post('/ocr/extract', async (req, res) => {
   await sleep(200);
   const { documentUrl = '' } = req.body;
@@ -54,6 +125,24 @@ router.post('/ocr/extract', async (req, res) => {
 });
 
 // --- Fraud detection ---------------------------------------------------------------
+/**
+ * @openapi
+ * /mock/fraud/check:
+ *   post:
+ *     summary: Mock Fraud Risk Check
+ *     tags: [Mock Sandbox APIs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name: { type: string, example: "Rahul Sharma" }
+ *     responses:
+ *       200: { description: OK }
+ */
 router.post('/fraud/check', async (req, res) => {
   await sleep(120);
   const { name = '' } = req.body;
@@ -62,6 +151,25 @@ router.post('/fraud/check', async (req, res) => {
 });
 
 // --- Face match ----------------------------------------------------------------------
+/**
+ * @openapi
+ * /mock/face-match/compare:
+ *   post:
+ *     summary: Mock Face Match Comparison
+ *     tags: [Mock Sandbox APIs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [selfieUrl, idPhotoUrl]
+ *             properties:
+ *               selfieUrl: { type: string, example: "https://example.com/selfie.png" }
+ *               idPhotoUrl: { type: string, example: "https://example.com/id.png" }
+ *     responses:
+ *       200: { description: OK }
+ */
 router.post('/face-match/compare', async (req, res) => {
   await sleep(180);
   const { selfieUrl = '', idPhotoUrl = '' } = req.body;
@@ -70,8 +178,25 @@ router.post('/face-match/compare', async (req, res) => {
 });
 
 // --- Flaky endpoint used to demo the retry mechanism ---------------------------------
-// Fails with 503 on the first `failTimes` calls sharing the same `attemptKey`, then
-// succeeds - lets sample-configs/*.json show a retry policy actually recovering.
+/**
+ * @openapi
+ * /mock/flaky/echo:
+ *   post:
+ *     summary: Mock Flaky Service (Retry Demonstration)
+ *     tags: [Mock Sandbox APIs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [attemptKey, failTimes]
+ *             properties:
+ *               attemptKey: { type: string, example: "test-run-1" }
+ *               failTimes: { type: number, example: 2 }
+ *     responses:
+ *       200: { description: OK }
+ */
 const attemptCounts = new Map();
 router.post('/flaky/echo', async (req, res) => {
   const { attemptKey = 'default', failTimes = 2 } = req.body;
