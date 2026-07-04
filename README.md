@@ -29,7 +29,7 @@ Respond with a standardized JSON Envelope
 7. [Mock Vendor APIs reference](#7-mock-vendor-apis-reference)
 8. [The Agentic AI Feature](#8-the-agentic-ai-feature)
 9. [CI/CD Pipeline](#9-cicd-pipeline)
-
+10. [Postman API Testing Collection](#10-postman-api-testing-collection)
 ---
 
 ## 1. Core Architectural Concepts
