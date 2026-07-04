@@ -79,6 +79,7 @@ const workflowConfigSchema = {
     path: { type: 'string', pattern: '^/' },
     authRequired: { type: 'boolean', default: false },
     requestSchema: { type: 'object' }, // JSON Schema used to validate incoming payloads
+    createdBy: { type: 'string' },
     steps: { type: 'array', items: stepSchema, minItems: 1 },
     response: {
       type: 'object',
