@@ -30,8 +30,59 @@ app.use((req, res, next) => {
 
 app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get('/docs.json', (req, res) => res.json(swaggerSpec));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(null, { swaggerOptions: { url: '/docs.json' } }));
+app.get('/docs.json', async (req, res, next) => {
+  try {
+    const WorkflowConfig = require('./models/WorkflowConfig');
+    const activeWorkflows = await WorkflowConfig.find({ isActive: true });
+    
+    // Deep clone the base swagger specification
+    const spec = JSON.parse(JSON.stringify(swaggerSpec));
+    
+    activeWorkflows.forEach((wf) => {
+      const method = wf.method.toLowerCase();
+      if (!spec.paths[wf.path]) {
+        spec.paths[wf.path] = {};
+      }
+      
+      spec.paths[wf.path][method] = {
+        summary: `Dynamic Workflow: ${wf.name}`,
+        tags: ['Dynamic Client APIs'],
+        description: wf.description || 'Config-driven custom API endpoint.',
+        requestBody: wf.requestSchema ? {
+          required: true,
+          content: {
+            'application/json': {
+              schema: wf.requestSchema
+            }
+          }
+        } : undefined,
+        responses: {
+          200: {
+            description: 'Successful Execution',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: { type: 'object' },
+                    error: { type: 'object', nullable: true },
+                    meta: { type: 'object' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
+    });
+    
+    res.json(spec);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Admin API: manages workflow configs, execution logs, auth, and the AI generator.
 app.use('/admin/auth', authRoutes);
