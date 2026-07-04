@@ -1,4 +1,4 @@
-# ConfigFlow: Master API Curl Testing Cheat Sheet
+# ConfigFlow: API Curl Testing Sheet
 
 This document compiles copy-pasteable `curl` commands and their exact expected JSON response payloads for **every single request** in the ConfigFlow system.
 
