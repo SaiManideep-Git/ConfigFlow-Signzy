@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import WorkflowListPage from './pages/WorkflowListPage';
 import WorkflowEditorPage from './pages/WorkflowEditorPage';
 import LogsPage from './pages/LogsPage';
+import ApiKeysPage from './pages/ApiKeysPage';
 
 function RequireAuth({ children }) {
   const { token } = useAuth();
@@ -23,6 +24,7 @@ function Shell({ children }) {
         <nav>
           <Link to="/">Workflows</Link>
           <Link to="/logs">Execution Logs</Link>
+          <Link to="/api-keys">API Keys</Link>
         </nav>
         <div className="topbar-right">
           <span className="user-email">{email}</span>
@@ -82,6 +84,16 @@ export default function App() {
           <RequireAuth>
             <Shell>
               <LogsPage />
+            </Shell>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/api-keys"
+        element={
+          <RequireAuth>
+            <Shell>
+              <ApiKeysPage />
             </Shell>
           </RequireAuth>
         }

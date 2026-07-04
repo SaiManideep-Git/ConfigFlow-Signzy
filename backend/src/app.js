@@ -9,6 +9,7 @@ const swaggerSpec = require('./docs/swagger');
 const authRoutes = require('./routes/admin/auth.routes');
 const workflowsRoutes = require('./routes/admin/workflows.routes');
 const logsRoutes = require('./routes/admin/logs.routes');
+const apiKeysRoutes = require('./routes/admin/apikeys.routes');
 const agentRoutes = require('./routes/agent/generate.routes');
 const mockVendorRoutes = require('./mock-vendors/mockVendors.routes');
 const { dispatcherMiddleware } = require('./routes/dynamic/dispatcher');
@@ -36,6 +37,7 @@ app.get('/docs.json', (req, res) => res.json(swaggerSpec));
 app.use('/admin/auth', authRoutes);
 app.use('/admin/workflows', workflowsRoutes);
 app.use('/admin/logs', logsRoutes);
+app.use('/admin/api-keys', apiKeysRoutes);
 app.use('/agent', agentRoutes);
 
 // Mock third-party vendors used by the sample workflow configs.
