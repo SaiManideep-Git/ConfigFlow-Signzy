@@ -5,6 +5,7 @@ import 'reactflow/dist/style.css';
 import api from '../api/client';
 import StepNode from '../components/StepNode';
 import StepEditorPanel from '../components/StepEditorPanel';
+import GlobalEditorPanel from '../components/GlobalEditorPanel';
 import GenerateWorkflowModal from '../components/GenerateWorkflowModal';
 import TestConsole from '../components/TestConsole';
 
@@ -316,7 +317,11 @@ export default function WorkflowEditorPage({ mode }) {
           </ReactFlow>
         </div>
         <div className="side-panel">
-          <StepEditorPanel step={selectedStep} onChange={updateStep} onDelete={() => selectedStep && deleteStep(selectedStep.id)} />
+          {selectedStep ? (
+            <StepEditorPanel step={selectedStep} onChange={updateStep} onDelete={() => selectedStep && deleteStep(selectedStep.id)} />
+          ) : (
+            <GlobalEditorPanel workflow={workflow} onChange={setWorkflow} />
+          )}
           <div style={{ height: 16 }} />
           <TestConsole method={workflow.method} path={mode === 'edit' ? workflow.path : ''} authRequired={workflow.authRequired} />
         </div>
