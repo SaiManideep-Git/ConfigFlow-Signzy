@@ -161,3 +161,12 @@ The project features a complete CI/CD automation workflow powered by **GitHub Ac
 * Runs automatically on every push or pull request to the `main` branch.
 * Installs dependencies, runs backend tests with `npm test`, and runs `npm run build` on the frontend to guarantee zero syntax or compilation errors before live deployment.
 * Once the checks pass, Render (backend) and Vercel (frontend) deploy the updates automatically.
+
+---
+
+## 10. Postman API Testing Collection
+
+To make testing local or deployed APIs effortless, a pre-configured **Postman Collection** is included directly in the repository:
+* **Collection Configuration File**: [ConfigFlow.postman_collection.json](ConfigFlow.postman_collection.json)
+* **Pre-configured Flows**: Includes grouped requests for Admin Authentication, CRUD configurations, execution log monitoring, mock partner APIs, and client-facing orchestrated gateways.
+* **Automatic Auth Propagation**: The collection includes a custom JavaScript post-response validation script on the Login request. Once the admin logs in, Postman automatically captures the JWT token and binds it to all subsequent administrative requests, removing the need for manual copy-pasting.
