@@ -35,9 +35,9 @@ export default function GlobalEditorPanel({ workflow, onChange }) {
   const [responseType, setResponseType] = useState('none');
 
   useEffect(() => {
-    if (workflow.response?.expression) {
+    if (workflow.response && 'expression' in workflow.response) {
       setResponseType('expression');
-    } else if (workflow.response?.mapping && Object.keys(workflow.response.mapping).length > 0) {
+    } else if (workflow.response && 'mapping' in workflow.response) {
       setResponseType('mapping');
     } else {
       setResponseType('none');
