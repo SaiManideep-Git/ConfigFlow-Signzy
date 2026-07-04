@@ -19,7 +19,7 @@ curl -X POST https://configflow-signzy.onrender.com/admin/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@configflow.local",
-    "password": "ChangeMe123!"
+    "password": "Password@123"
   }'
 ```
 * **Expected Response (`200 OK`)**:
